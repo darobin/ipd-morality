@@ -20,7 +20,8 @@
     nextMove: 'C' for "Cooperate" or 'D' for "Defect"
 */
 
-(function (global) {
+var isNode = typeof exports !== "undefined";
+(function (global, env) {
     function BotPlayer (name, desc, nextMoveCB) {
         this.name = name;
         this.desc = desc || name;
@@ -33,4 +34,5 @@
         }
     };
     global.BotPlayer = BotPlayer;
-}(typeof exports !== "undefined" ? exports : window));
+    env.bots = {};
+}(isNode ? exports : window, isNode ? require("./index.js") : window));

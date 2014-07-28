@@ -3,7 +3,8 @@
     Ported from https://github.com/tscizzle/IPD_Morality/
 ***************************************************************************************************/
 
-(function (global) {
+var isNode = typeof exports !== "undefined";
+(function (global, env) {
     function Arena () {}
     Arena.prototype = {
         /*  Based on a probability of continuing each step, generate
@@ -83,7 +84,7 @@
     ,   validateTournamentInputs:   function (botList, numMeetings, payoffs, w) {
             var errors = [];
             botList.forEach(function (bot) {
-                if (!bot instanceof global.BotPlayer)
+                if (!bot instanceof env.BotPlayer)
                     errors.push("botList must be a list of BotPlayer objects");
             });
             if (numMeetings < 1) errors.push("numMeetings must be at least 1");
@@ -114,7 +115,7 @@
             if (!payoffs) payoffs = { T: 5, R: 3, P: 1, S: 0 };
             if (typeof w === "undefined") w = 0.995;
             var errors = this.validateTournamentInputs(botList, numMeetings, payoffs, w);
-            if (errors.length) return global.error(errors);
+            if (errors.length) return env.error(errors);
             var interactions = {}
             ,   interactionLengths = this.generateInteractionLengths(w, numMeetings)
             ;
@@ -133,10 +134,10 @@
                     interactions[bot1.tournamentID + "-" + bot2.tournamentID] = meetingResultsList;
                 }
             }
-            return new global.TournamentResults(botList, interactions, payoffs);
+            return new env.TournamentResults(botList, interactions, payoffs);
         }
     };
     
     
     global.Arena = Arena;
-}(typeof exports !== "undefined" ? exports : window));
+}(isNode ? exports : window, isNode ? require("./index.js") : window));
