@@ -1,0 +1,10 @@
+{
+    "name": "ipd-morality"
+,   "version": "0.0.1"
+,   "homepage": "http://darobin.github.io/ipd-morality/"
+,   "authors": [ "Robin Berjon <robin@berjon.com>" ]
+,   "description": "Playing with IPD and morality definitions"
+,   "license": "MIT"
+,   "private": true
+,   "dependencies": {}
+}
