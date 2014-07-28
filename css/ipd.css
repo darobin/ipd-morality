@@ -1,0 +1,35 @@
+
+@font-face {
+    font-family: "Cinzel";
+    src: url("cinzel-regular-webfont.eot");
+    src: url("cinzel-regular-webfont.eot?#iefix") format("embedded-opentype"),
+         url("cinzel-regular-webfont.woff") format("woff"),
+         url("cinzel-regular-webfont.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    background: #e6e8dd;
+}
+
+header.navbar.navbar-inverse {
+    background: #4da842;
+    border-bottom:  5px solid #156c0c;
+}
+header.navbar.navbar-inverse h1.navbar-brand, h1.navbar-brand:hover {
+    margin:    0;
+    color:  #e6e8dd;
+    cursor: default;
+    font-family:    Cinzel;
+    font-size:  2em;
+}
+
+
+
+
+/*
+    red:    #fb4342
+    blue:   #0092e8
+*/
+
