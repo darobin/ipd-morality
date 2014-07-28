@@ -149,52 +149,40 @@ var isNode = typeof exports !== "undefined";
                                         });
             this.eigenMosesScores = this.principalEigenvector(coopDefectMatrix, 100);
         }
+        // Various simple getters
+    ,   coopRateByID:       function (id) { return this.cooperationRates[id]; }
+    ,   goodPartnerByID:    function (id) { return this.biggerManScores[id]; }
+    ,   eigenJesusByID:     function (id) { return this.eigenJesusScores[id]; }
+    ,   eigenMosesByID:     function (id) { return this.eigenMosesScores[id]; }
+    ,   sortedBotList:  function (sortCB) {
+            return this.botList
+                        .slice()
+                        .map(function (bot) {
+                            return [bot, sortCB(bot.tournamentID)];
+                        }.bind(this))
+                        .sort(function (a, b) {
+                            if (a[1] > b[1]) return -1;
+                            if (a[1] < b[1]) return 1;
+                            return 0;
+                        })
+                        .map(function (entry) { return entry[0]; })
+            ;
+        }
+    ,   botsSortedByCoopRate:   function () {
+            return this.sortedBotList(function (id) { return this.coopRateByID(id); }.bind(this));
+        }
+    ,   botsSortedByGoodPartner:   function () {
+            return this.sortedBotList(function (id) { return this.goodPartnerByID(id); }.bind(this));
+        }
+    ,   botsSortedByEigenJesus:   function () {
+            return this.sortedBotList(function (id) { return this.eigenJesusByID(id); }.bind(this));
+        }
+    ,   botsSortedByEigenMoses:   function () {
+            return this.sortedBotList(function (id) { return this.eigenMosesByID(id); }.bind(this));
+        }
     };
     global.MoralityCalculator = MoralityCalculator;
 }(isNode ? exports : window, isNode ? require("./index") : window));
-
-/*
-    #####
-    # Getter methods
-    #####
-
-    def get_coop_rate_by_id(self, bot_id):
-        return self.cooperation_rates[bot_id]
-
-    def get_good_partner_by_id(self, bot_id):
-        return self.bigger_man_scores[bot_id]
-
-    def get_eigenjesus_by_id(self, bot_id):
-        return self.eigenjesus_scores[bot_id]
-
-    def get_eigenmoses_by_id(self, bot_id):
-        return self.eigenmoses_scores[bot_id]
-
-    def get_bots_sorted_by_coop_rate(self):
-        bot_list = self.tourney_res.botList
-        def get_coop_rate(bot):
-            return self.get_coop_rate_by_id(bot.tournament_id)
-        return sorted(bot_list, key=get_coop_rate, reverse=True)
-
-    def get_bots_sorted_by_good_partner(self):
-        bot_list = self.tourney_res.botList
-        def get_good_partner(bot):
-            return self.get_good_partner_by_id(bot.tournament_id)
-        return sorted(bot_list, key=get_good_partner, reverse=True)
-
-    def get_bots_sorted_by_eigenjesus(self):
-        bot_list = self.tourney_res.botList
-        def get_eigenjesus(bot):
-            return self.get_eigenjesus_by_id(bot.tournament_id)
-        return sorted(bot_list, key=get_eigenjesus, reverse=True)
-
-    def get_bots_sorted_by_eigenmoses(self):
-        bot_list = self.tourney_res.botList
-        def get_eigenmoses(bot):
-            return self.get_eigenmoses_by_id(bot.tournament_id)
-        return sorted(bot_list, key=get_eigenmoses, reverse=True)
-*/
-
 /*
     Haven't ported the stringifier so far since the intent is to use HTML reporting
     def __str__(self):
