@@ -140,4 +140,4 @@ var isNode = typeof exports !== "undefined";
     
     
     global.Arena = Arena;
-}(isNode ? exports : window, isNode ? require("./index.js") : window));
+}(isNode ? exports : window, isNode ? require("./index") : window));

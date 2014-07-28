@@ -1,13 +1,16 @@
 
 var isNode = typeof exports !== "undefined";
 (function (global, env) {
-    env.bots.all_d = function () {
-        return new env.BotPlayer(   "All D"
-                                ,   "ALL_D defects unconditionally."
-                                ,   function () { //pastMoves, payoffs, w
-                                        return "D";
-                                    }
-                                )
+    env.bots.tit_for_tat = function () {
+        return new env.BotPlayer(
+                "Tit-For-Tat"
+            ,   "TIT_FOR_TAT defaults to cooperation on the first turn, and "   +
+                "thereafter mirrors its partner's previous move."
+            ,   function (pastMoves) {
+                    if (!pastMoves.length) return "C";
+                    return pastMoves[pastMoves.length - 1][1];
+                }
+            )
         ;
     };
-}(isNode ? exports : window, isNode ? require("./index.js") : window));
+}(isNode ? exports : window, isNode ? require("../index") : window));

@@ -35,4 +35,4 @@ var isNode = typeof exports !== "undefined";
     };
     global.BotPlayer = BotPlayer;
     env.bots = {};
-}(isNode ? exports : window, isNode ? require("./index.js") : window));
+}(isNode ? exports : window, isNode ? require("./index") : window));

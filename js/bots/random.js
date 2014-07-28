@@ -1,13 +1,17 @@
 
 var isNode = typeof exports !== "undefined";
 (function (global, env) {
-    env.bots.all_d = function () {
-        return new env.BotPlayer(   "All D"
-                                ,   "ALL_D defects unconditionally."
-                                ,   function () { //pastMoves, payoffs, w
-                                        return "D";
-                                    }
-                                )
+    env.bots.random = function (cooperate) {
+        if (cooperate == null) cooperate = 0.5;
+        return new env.BotPlayer(
+                "Random (" + cooperate + ")"
+            ,   "RANDOM chooses randomly between cooperation and defection with "   +
+                "some specified probability for each, independent of its partner's "+
+                "moves."
+            ,   function () {
+                    return Math.random() < cooperate ? "C" : "D";
+                }
+            )
         ;
     };
-}(isNode ? exports : window, isNode ? require("./index.js") : window));
+}(isNode ? exports : window, isNode ? require("../index") : window));

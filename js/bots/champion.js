@@ -33,4 +33,4 @@ var isNode = typeof exports !== "undefined";
             )
         ;
     };
-}(isNode ? exports : window, isNode ? require("./index.js") : window));
+}(isNode ? exports : window, isNode ? require("../index") : window));

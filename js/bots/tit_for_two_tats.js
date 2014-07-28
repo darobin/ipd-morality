@@ -1,13 +1,18 @@
 
 var isNode = typeof exports !== "undefined";
 (function (global, env) {
-    env.bots.all_d = function () {
-        return new env.BotPlayer(   "All D"
-                                ,   "ALL_D defects unconditionally."
-                                ,   function () { //pastMoves, payoffs, w
-                                        return "D";
-                                    }
-                                )
+    env.bots.tit_for_two_tats = function () {
+        return new env.BotPlayer(
+                "Tit-For-Two-Tats"
+            ,   "TIT_FOR_TWO_TATS defects if and only if its partner has "  +
+                "defected for the past two turns."
+            ,   function (pastMoves) {
+                    if (pastMoves.length < 2) return "C";
+                    if (pastMoves[pastMoves.length - 1][1] === "D" && 
+                        pastMoves[pastMoves.length - 2][1] === "D") return "D";
+                    return "C";
+                }
+            )
         ;
     };
-}(isNode ? exports : window, isNode ? require("./index.js") : window));
+}(isNode ? exports : window, isNode ? require("../index") : window));
