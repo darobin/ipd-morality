@@ -14,4 +14,7 @@ var isNode = typeof exports !== "undefined";
             )
         ;
     };
+    env.bots.random.configuration = {
+        cooperate:   { type: Number, default: 0.5 }
+    };
 }(isNode ? exports : window, isNode ? require("../index") : window));

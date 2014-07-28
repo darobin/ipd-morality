@@ -21,4 +21,7 @@ var isNode = typeof exports !== "undefined";
             )
         ;
     };
+    env.bots.majority.configuration = {
+        soft:   { type: Boolean, default: true }
+    };
 }(isNode ? exports : window, isNode ? require("../index") : window));

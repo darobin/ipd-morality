@@ -11,21 +11,25 @@
 
 body {
     background: #e6e8dd;
+    margin-top: 70px;
 }
-
 header.navbar.navbar-inverse {
     background: #4da842;
     border-bottom:  5px solid #156c0c;
 }
 header.navbar.navbar-inverse h1.navbar-brand, h1.navbar-brand:hover {
-    margin:    0;
+    margin:    0 0 0 -15px;
     color:  #e6e8dd;
     cursor: default;
     font-family:    Cinzel;
     font-size:  2em;
 }
-
-
+h2, h3 {
+    font-family:    Cinzel;
+}
+.well > h3 {
+    margin-top: 0;
+}
 
 
 /*

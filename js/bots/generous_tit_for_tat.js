@@ -19,4 +19,7 @@ var isNode = typeof exports !== "undefined";
             )
         ;
     };
+    env.bots.generous_tit_for_tat.configuration = {
+        generous:   { type: Number, default: 0.1 }
+    };
 }(isNode ? exports : window, isNode ? require("../index") : window));

@@ -18,4 +18,7 @@ var isNode = typeof exports !== "undefined";
             )
         ;
     };
+    env.bots.joss.configuration = {
+        sneaky: { type: Number, default: 0.1 }
+    };
 }(isNode ? exports : window, isNode ? require("../index") : window));
