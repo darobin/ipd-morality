@@ -10,7 +10,7 @@ var isNode = typeof exports !== "undefined";
                 "ratio of its partner's defections to the total number of moves so far."
             ,   function (pastMoves) {
                     if (!pastMoves.length) return "C";
-                    if (pastMoves[pastMoves.length - 1][1]) return "C";
+                    if (pastMoves[pastMoves.length - 1][1] === "C") return "C";
                     var theirDefections = 0;
                     pastMoves.forEach(function (turn) { if (turn[1] === "D") theirDefections++; });
                     var defectionRatio = theirDefections/pastMoves.length;

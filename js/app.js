@@ -29,11 +29,8 @@ window.error = function (msg) {
 };
 
 // TOURNAMENTS
-var $lu = $("#lineup");
-
-function loadLastLineup () {
-    if (localStorage.lastLineup) return JSON.parse(localStorage.lastLineup);
-    return [
+var $lu = $("#lineup")
+,   defaultLineup =     [
         { type: "all_d" }
     ,   { type: "all_c" }
     ,   { type: "random",                   params: { cooperate: 0.5 } }
@@ -54,7 +51,12 @@ function loadLastLineup () {
     ,   { type: "champion" }
     ,   { type: "random",                   params: { cooperate: 0.8 } }
     ,   { type: "random",                   params: { cooperate: 0.2 } }
-    ];
+    ]
+;
+
+function loadLastLineup () {
+    if (localStorage.lastLineup) return JSON.parse(localStorage.lastLineup);
+    return defaultLineup;
 }
 
 function saveLineup (lineup) {
@@ -147,6 +149,11 @@ $("#add-bot").submit(function (ev) {
         bot.params[$inp.attr("name")] = val;
     });
     addToLineup(bot);
+});
+
+$("#default-lineup").click(function () {
+    saveLineup(defaultLineup);
+    showTournament();
 });
 
 $("#run").submit(function (ev) {
