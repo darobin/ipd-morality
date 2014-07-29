@@ -11,13 +11,14 @@ var isNode = typeof exports !== "undefined";
                 "on and off every other turn."
             ,   function (pastMoves) {
                     if (!pastMoves.length) return "D";
-                    var partnerMoves = pastMoves.map(function (turn) { return turn[1]; });
-                    if (pastMoves.theirDefections) {
+                    var partnerMoves = [];
+                    for (var i = 0, n = pastMoves.length; i < n; i++) partnerMoves.push(pastMoves[i][1]);
+                    if (!pastMoves.theirDefections) {
                         if (pastMoves.length < 3) return "C";
                         return pastMoves[pastMoves.length - 1][0] === "C" ? "D" : "C";
                     }
                     else {
-                        if (partnerMoves.slice(0, partnerMoves.length - 1).indexOf("D") === -1) return "C";
+                        if (pastMoves.theirDefections < 2) return "C";
                         else return partnerMoves[partnerMoves.length - 1];
                     }
                 }
