@@ -1,4 +1,4 @@
-/* xglobal error */
+/* global error */
 
 // error messages
 window.error = function (msg) {
@@ -72,6 +72,44 @@ function showTournament () {
         $lu.append(document.createTextNode(" "));
     });
 }
+
+// loading data
+var $botlist = $("#bot-type")
+,   $botprms = $("#bot-prms")
+;
+$botlist.empty();
+$botprms.empty();
+for (var type in window.bots) {
+    $("<option></option>").text(type).attr("value", type).appendTo($botlist);
+}
+$botlist.change(function () {
+    $botprms.empty();
+    var botDef = window.bots[$botlist.val()].configuration;
+    for (var k in botDef) {
+        if (botDef[k].type === Number) {
+            var $lbl = $("<label></label>")
+                            .text(" " + k + ": ")
+                            .appendTo($botprms)
+            ;
+            $("<input type='number' min='0' max='0.999' step='0.05' class='form-control input-sm'>")
+                .attr({ name: k, value: botDef[k].default || "", placeholder: k })
+                .appendTo($lbl)
+                ;
+        }
+        else if (botDef[k].type === Boolean) {
+            var $inp = $("<input type='checkbox'>").attr({ name: k });
+            if (botDef[k].default === true) $inp.attr("checked", "checked");
+            $("<label></label>")
+                .text(" " + k + ": ")
+                .append($inp)
+                .appendTo($botprms)
+            ;
+        }
+        else {
+            error("Unknown field type: " + botDef[k].type);
+        }
+    }
+});
 
 
 showTournament();

@@ -50,6 +50,11 @@
             <div class="panel-heading"><h3 class="panel-title">Bot Lineup</h3></div>
             <div class="panel-body">
               <div id='lineup'></div>
+              <form class='form form-inline' id='add-bot'>
+                <label>Add bot: <select id='bot-type' class='form-control input-sm'></select></label>
+                <span id='bot-prms'></span>
+                <button type='submit' class='btn btn-xs btn-success'><i class='glyphicon glyphicon-plus'></i> Add</button>
+              </form>
               <label>Number of meetings: <input type="number" min="1" value="5" id="num-meetings"></label>
               <button class="btn btn-success pull-right">Run tournament</button>
             </div>
@@ -61,7 +66,7 @@
     <!--
       XXX
         - on run, save bot lineup
-        - extract bot lineup from table
+        - extract bot lineup from list
         - delete bot
         - add bot (add a row with drop down, on change offer config and Ok, on Ok just make a normal row)
         - on run, run the tournament, make the calculations (provide feedback, progress if possible)

@@ -39,6 +39,19 @@ span.label .btn {
     margin: 0 0 2px 2px;
     line-height:    0.5;
 }
+#add-bot {
+    padding-top:    1em;
+}
+#add-bot input[type='number'] {
+    width:  60px;
+}
+#bot-prms:not(:empty) {
+    padding:    0 5px;
+}
+#bot-prms label {
+    font-weight:    normal;
+    font-style: italic;
+}
 
 /*
     red:    #fb4342
