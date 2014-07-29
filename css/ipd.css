@@ -24,7 +24,7 @@ header.navbar.navbar-inverse h1.navbar-brand, h1.navbar-brand:hover {
     font-family:    Cinzel;
     font-size:  2em;
 }
-h2, h3 {
+h2, h3, h4, h5, h6 {
     font-family:    Cinzel;
 }
 .well > h3 {
