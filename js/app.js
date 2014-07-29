@@ -19,6 +19,8 @@ window.error = function (msg) {
 };
 
 // TOURNAMENTS
+var $lu = $("#lineup");
+
 function loadLastLineUp () {
     if (localStorage.lastLineup) return JSON.parse(localStorage.lastLineup);
     return [
@@ -45,32 +47,35 @@ function loadLastLineUp () {
     ];
 }
 
+function addToLineup (bot) {
+    var $lbl = $("<span class='label label-info'></span>").text(bot.type).attr("data-type", bot.type);
+    if (bot.params) {
+        var botDef = window.bots[bot.type].configuration
+        ,   prms = []
+        ;
+        for (var k in botDef) {
+            var val = typeof bot.params[k] !== "undefined" ? bot.params[k] : botDef[k].default;
+            prms.push(k + "=" + val);
+            $lbl.attr("data-" + k, val);
+        }
+        $lbl.append(document.createTextNode(" "));
+        $("<span class='prm'></span>").text("(" + prms.join(",") + ")").appendTo($lbl);
+    }
+    $lbl.append(document.createTextNode(" "));
+    $("<button class='btn btn-xs del'><span aria-hidden='true'>&times;</span><span class='sr-only'>Delete</span></button>")
+        .appendTo($lbl);
+    $lbl.appendTo($lu);
+    $lu.append(document.createTextNode(" "));
+    return $lbl;
+}
 
 function showTournament () {
     var $tn = $("#tournament")
     ,   lineup = loadLastLineUp()
-    ,   $lu = $("#lineup")
     ;
     $tn.show();
     $lu.empty();
-    lineup.forEach(function (bot) {
-        var $lbl = $("<span class='label label-info'></span>").text(bot.type);
-        if (bot.params) {
-            var botDef = window.bots[bot.type].configuration
-            ,   prms = []
-            ;
-            for (var k in botDef) {
-                prms.push(k + "=" + (typeof bot.params[k] !== "undefined" ? bot.params[k] : botDef[k].default));
-            }
-            $lbl.append(document.createTextNode(" "));
-            $("<span class='prm'></span>").text("(" + prms.join(",") + ")").appendTo($lbl);
-        }
-        $lbl.append(document.createTextNode(" "));
-        $("<button class='btn btn-xs del'><span aria-hidden='true'>&times;</span><span class='sr-only'>Delete</span></button>")
-            .appendTo($lbl);
-        $lbl.appendTo($lu);
-        $lu.append(document.createTextNode(" "));
-    });
+    lineup.forEach(addToLineup);
 }
 
 // loading data
@@ -113,6 +118,20 @@ $botlist.change(function () {
 
 $("body").on("click", "#lineup .del", function (ev) {
     $(ev.target).parent().remove();
+});
+$("#add-bot").submit(function (ev) {
+    ev.preventDefault();
+    var bot = { type: $botlist.val() };
+    $botprms.find("input").each(function () {
+        var $inp = $(this)
+        ,   val
+        ;
+        if (!bot.params) bot.params = {};
+        if ($inp.attr("type") === "radio" || $inp.attr("type") === "checkbox") val = $inp.is(":checked");
+        else val = $inp.val();
+        bot.params[$inp.attr("name")] = val;
+    });
+    addToLineup(bot);
 });
 
 showTournament();
