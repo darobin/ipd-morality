@@ -120,7 +120,8 @@ var isNode = typeof exports !== "undefined";
             return this.botList
                         .slice()
                         .map(function (bot) {
-                            return [bot, this.scoreByID(bot.tournamentID)];
+                            bot.score = this.scoreByID(bot.tournamentID);
+                            return [bot, bot.score];
                         }.bind(this))
                         .sort(function (a, b) {
                             if (a[1] > b[1]) return -1;
@@ -135,46 +136,3 @@ var isNode = typeof exports !== "undefined";
     
     global.TournamentResults = TournamentResults;
 }(isNode ? exports : window, isNode ? require("./index") : window));
-
-/*
-    Haven't ported the stringifier so far since the intent is to use HTML reporting
-
-    def __str__(self):
-        # sort the bots for printing output
-        def get_score(bot):
-            return self.bot_info_by_id[bot.tournament_id]['total']
-        sorted_bots = sorted(self.botList, key=get_score, reverse=True)
-
-        headers = [
-            "Tournament ID",
-            "Bot Name",
-            "Total Score",
-            "Avg Score Per Turn"
-        ]
-        num_cols = len(headers)
-
-        # find a good column width to use for formatting the output
-        long_header = max([len(h) for h in headers])
-        long_name = max([len(bot.name) for bot in self.botList])+1
-        col = max([long_header, long_name])
-        col_str = str(col)
-        format_str = (("{: <"+col_str+"} ")*num_cols)[:-1]
-        hr = "-"*(num_cols*col)
-
-        # construct output string
-        output = "\n***\n"
-        output += "Interaction Lengths: "+str(self.interaction_lengths)
-        output += "\n***\n"
-        headers_str = format_str.format(*headers)
-        output += "\n"+hr+"\n"+headers_str+"\n"+hr+"\n"
-        for bot in sorted_bots:
-            t_id = bot.tournament_id
-            name = self.get_name_by_id(t_id)
-            score = self.get_score_by_id(t_id)
-            avg = self.get_avg_score_by_id(t_id)
-            row = format_str.format(str(t_id), name, str(score), avg)
-            output += row+"\n"
-        return output
-
-
-*/

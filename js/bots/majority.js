@@ -3,6 +3,7 @@ var isNode = typeof exports !== "undefined";
 (function (global, env) {
     env.bots.majority = function (soft) {
         if (soft == null) soft = true;
+        if (typeof soft === "string") soft = soft === "true";
         return new env.BotPlayer(
                 "Majority (" + (soft ? "soft" : "hard") + ")"
             ,   "MAJORITY cooperates as long as its partner has cooperated more "       +

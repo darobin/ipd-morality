@@ -1,5 +1,15 @@
 /* global error, Arena, MoralityCalculator */
 
+/*
+    XXX
+    - default set
+    - provide feedback on progress
+    - note that some cases with few bots can have degenerate results (e.g. all_c + all_d + rand.5)
+    - add a UI to do evolutionary stuff
+    - workerify
+*/
+
+
 // error messages
 window.error = function (msg) {
     var $content;
@@ -175,10 +185,46 @@ $("#run").submit(function (ev) {
     var arena = new Arena()
     ,   results = arena.runTournament(bots, numMeetings)
     ,   morality = new MoralityCalculator(results)
+    ,   $restabs = $("#result-tables")
+    ,   data = {
+            Score:          [results.sortedBotList(), "score", "int"]
+        ,   Cooperation:    [morality.botsSortedByCoopRate(), "coopRate", "float"]
+        ,   "Good Partner": [morality.botsSortedByGoodPartner(), "goodPartner", "float"]
+        ,   "EigenJesus":   [morality.botsSortedByEigenJesus(), "eigenJesus", "float"]
+        ,   "EigenMoses":   [morality.botsSortedByEigenMoses(), "eigenMoses", "float"]
+        }
     ;
-    console.log(results);
-    console.log("##################");
-    console.log(morality);
+    // console.log(results);
+    // console.log("##################");
+    // console.log(morality);
+    $restabs.empty();
+    var $tmpl = $([
+        '<div class="col-lg-2 col-sm-6 col-xs-12">'
+    ,   '  <div class="panel panel-default">'
+    ,   '    <div class="panel-heading"><h3 class="panel-title">XXX</h3></div>'
+    ,   '    <table class="table table-striped table-condensed">'
+    ,   '      <thead><tr><th>bot</th><th>#</th></tr></thead>'
+    ,   '      <tbody></tbody>'
+    ,   '    </table>'
+    ,   '  </div>'
+    ,   '</div>'
+    ].join("\n"));
+    for (var type in data) {
+        var $tab = $tmpl.clone();
+        $tab.find("h3").text(type);
+        data[type][0].forEach(function (entry) {
+            var val = entry[data[type][1]]
+            ,   isInt = data[type][2] === "int"
+            ;
+            val = isNaN(val) ? "-" : (isInt ? val : val.toFixed(3));
+            $("<tr></tr>")
+                .append($("<td></td>").text(entry.name))
+                .append($("<td></td>").text(val))
+                .appendTo($tab.find("tbody"))
+            ;
+        });
+        $tab.appendTo($restabs);
+    }
 });
 
 showTournament();

@@ -55,7 +55,6 @@ var isNode = typeof exports !== "undefined";
                     j += i;
                     var bot2ID = botList[j].tournamentID
                     ,   interactions = tr.interactions[bot1ID + "-" + bot2ID]
-                    // ,   totalTurns = interactions.reduce(function (prev, cur) { return (prev ? prev.length : 0) + cur.length; }, [])
                     ,   totalTurns = 0
                     ,   bot1Coops = 0
                     ,   bot2Coops = 0
@@ -105,7 +104,6 @@ var isNode = typeof exports !== "undefined";
             ,   currentVals = C[0].map(function () { return 1; })
             ,   pos = 0
             ;
-            // console.log("currentVals (before)", currentVals);
             while (pos < iters) {
                 // dot
                 var resVals = [];
@@ -121,11 +119,9 @@ var isNode = typeof exports !== "undefined";
                 currentVals = resVals;
                 pos++;
             }
-            // console.log("currentVals (after)", currentVals);
             var totalVal = currentVals.reduce(function (prev, cur) { return prev + cur; }, 0)
             ,   pev = clone(currentVals)
             ;
-            // console.log("totalVal", totalVal);
             for (var i = 0, n = currentVals.length; i < n; i++) {
                 pev[i] = (numVals/totalVal) * currentVals[i];
             }
@@ -153,7 +149,6 @@ var isNode = typeof exports !== "undefined";
                                                 return (cell - 0.5) * 2;
                                             });
                                         });
-            // console.log(this.cooperationMatrix, coopDefectMatrix);
             this.eigenMosesScores = this.principalEigenvector(coopDefectMatrix, 100);
         }
         // Various simple getters
@@ -161,11 +156,12 @@ var isNode = typeof exports !== "undefined";
     ,   goodPartnerByID:    function (id) { return this.biggerManScores[id]; }
     ,   eigenJesusByID:     function (id) { return this.eigenJesusScores[id]; }
     ,   eigenMosesByID:     function (id) { return this.eigenMosesScores[id]; }
-    ,   sortedBotList:  function (sortCB) {
-            return this.botList
+    ,   sortedBotList:  function (sortCB, key) {
+            return this.tournamentResults.botList
                         .slice()
                         .map(function (bot) {
-                            return [bot, sortCB(bot.tournamentID)];
+                            bot[key] = sortCB(bot.tournamentID);
+                            return [bot, bot[key]];
                         }.bind(this))
                         .sort(function (a, b) {
                             if (a[1] > b[1]) return -1;
@@ -176,59 +172,17 @@ var isNode = typeof exports !== "undefined";
             ;
         }
     ,   botsSortedByCoopRate:   function () {
-            return this.sortedBotList(function (id) { return this.coopRateByID(id); }.bind(this));
+            return this.sortedBotList(function (id) { return this.coopRateByID(id); }.bind(this), "coopRate");
         }
     ,   botsSortedByGoodPartner:   function () {
-            return this.sortedBotList(function (id) { return this.goodPartnerByID(id); }.bind(this));
+            return this.sortedBotList(function (id) { return this.goodPartnerByID(id); }.bind(this), "goodPartner");
         }
     ,   botsSortedByEigenJesus:   function () {
-            return this.sortedBotList(function (id) { return this.eigenJesusByID(id); }.bind(this));
+            return this.sortedBotList(function (id) { return this.eigenJesusByID(id); }.bind(this), "eigenJesus");
         }
     ,   botsSortedByEigenMoses:   function () {
-            return this.sortedBotList(function (id) { return this.eigenMosesByID(id); }.bind(this));
+            return this.sortedBotList(function (id) { return this.eigenMosesByID(id); }.bind(this), "eigenMoses");
         }
     };
     global.MoralityCalculator = MoralityCalculator;
 }(isNode ? exports : window, isNode ? require("./index") : window));
-/*
-    Haven't ported the stringifier so far since the intent is to use HTML reporting
-    def __str__(self):
-        # get the bots in order of their score
-        sorted_bots = self.tourney_res.get_sorted_bot_list()
-
-        headers = [
-            "Tournament ID",
-            "Bot Name",
-            "Cooperation Rate",
-            "Not Worse Partner",
-            "Recursive Jesus",
-            "Recursive Moses"
-        ]
-        num_cols = len(headers)
-
-        # find a good column width to use for formatting the output
-        long_header = max([len(h) for h in headers])
-        long_name = max(
-            [len(bot.name) for bot in self.tourney_res.get_bot_list()]
-        )+1
-        col = max([long_header, long_name])
-        col_str = str(col)
-        format_str = (("{: <"+col_str+"} ")*num_cols)[:-1]
-        hr = "-"*(num_cols*col)
-
-        # construct output string
-        headers_str = format_str.format(*headers)
-        output = "\n"+hr+"\n"+headers_str+"\n"+hr+"\n"
-        for bot in sorted_bots:
-            t_id = bot.tournament_id
-            name = self.tourney_res.get_name_by_id(t_id)
-            coop_rate = self.cooperation_rates[t_id]
-            big_man_score = self.bigger_man_scores[t_id]
-            eigenjesus = self.eigenjesus_scores[t_id]
-            eigenmoses = self.eigenmoses_scores[t_id]
-            row = format_str.format(str(t_id), name,\
-             str(coop_rate), str(big_man_score),
-             str(eigenjesus), eigenmoses)
-            output += row+"\n"
-        return output
-*/
