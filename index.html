@@ -47,6 +47,34 @@
       <div class="row">
         <div class="col-lg-12">
           <div class="panel panel-default">
+            <div class="panel-body">
+              <p>
+                This project explores the assignment of morality to bots involved in an iterated
+                prisoners’ dilemma.
+              </p>
+              <p>
+                Pick your bots below. Add or remove as many as you wish to. You can have duplicates,
+                it will influence the make of the population (and thus the results). The default set
+                is from <a href='http://www.scottaaronson.com/morality.pdf'>the paper on which this 
+                project is based</a>.
+              </p>
+              <p>
+                Be aware that small sets of bots with highly caricatural behaviours (e.g. all_c +
+                all_d + random(0.5)) can exhibit degenerate results highly sensitive to small random
+                fluctuations, or even the occasional <code>NaN</code>.
+              </p>
+              <p>
+                Once the bots are picked, you can run the tournament and read the results. You'll
+                really want <a href='http://www.scottaaronson.com/blog/?p=1820'>the background</a>
+                in order to make sense of it.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="panel panel-default">
             <div class="panel-heading"><h3 class="panel-title">Bot Lineup</h3></div>
             <div class="panel-body">
               <div id='lineup'></div>

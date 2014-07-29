@@ -49,7 +49,7 @@ span.label .btn {
     font-weight:    normal;
     font-style: italic;
 }
-.input-thin {
+input.form-control.input-thin {
     width:  60px;
 }
 

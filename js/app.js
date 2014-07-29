@@ -2,9 +2,7 @@
 
 /*
     XXX
-    - default set
     - provide feedback on progress
-    - note that some cases with few bots can have degenerate results (e.g. all_c + all_d + rand.5)
     - add a UI to do evolutionary stuff
     - workerify
 */
