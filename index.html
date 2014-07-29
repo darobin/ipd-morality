@@ -45,24 +45,11 @@
     <div class="container" id="tournament">
       <h2>Tournament</h2>
       <div class="row">
-        <div class="col-md-8 col-lg-6">
+        <div class="col-12">
           <div class="panel panel-default">
             <div class="panel-heading"><h3 class="panel-title">Bot Lineup</h3></div>
-            <table class="table table-condensed table-striped" id="lineup">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Parameters</th>
-                  <th style="text-align: right">&times;</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-          </div>
-        </div>
-        <div class="col-md-4 col-lg-6">
-          <div class="panel panel-default">
             <div class="panel-body">
+              <div id='lineup'></div>
               <label>Number of meetings: <input type="number" min="1" value="5" id="num-meetings"></label>
               <button class="btn btn-success pull-right">Run tournament</button>
             </div>

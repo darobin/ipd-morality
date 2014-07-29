@@ -1,4 +1,4 @@
-/* global error */
+/* xglobal error */
 
 // error messages
 window.error = function (msg) {
@@ -49,44 +49,27 @@ function loadLastLineUp () {
 function showTournament () {
     var $tn = $("#tournament")
     ,   lineup = loadLastLineUp()
-    ,   $tb = $("#lineup tbody")
+    ,   $lu = $("#lineup")
     ;
     $tn.show();
-    $tb.empty();
+    $lu.empty();
     lineup.forEach(function (bot) {
-        var $tr = $("<tr></tr>");
-        $("<td></td>").text(bot.type).appendTo($tr);
+        var $lbl = $("<span class='label label-info'></span>").text(bot.type);
         if (bot.params) {
             var botDef = window.bots[bot.type].configuration
-            ,   $td = $("<td></td>")
+            ,   prms = []
             ;
             for (var k in botDef) {
-                var $lbl = $("<label></label>").text(k + ": ");
-                if (botDef[k].type === Number) {
-                    $("<input type='number' class='form-control input-sm' min='0' max='0.999999' step='0.1'>")
-                        .val(typeof bot.params[k] !== "undefined" ? bot.params[k] : botDef[k].default)
-                        .appendTo($lbl)
-                    ;
-                    $td.addClass("form-inline");
-                }
-                else if (botDef[k].type === Boolean) {
-                    var $chk = $("<input type='checkbox'>")
-                    ,   val = typeof bot.params[k] !== "undefined" ? bot.params[k] : botDef[k].default
-                    ;
-                    if (val) $chk.attr("checked", "checked");
-                    $chk.appendTo($lbl);
-                }
-                else {
-                    error("Unsupported type: " + botDef[k].type);
-                }
-                $lbl.appendTo($td);
+                prms.push(k + "=" + (typeof bot.params[k] !== "undefined" ? bot.params[k] : botDef[k].default));
             }
-            $td.appendTo($tr);
+            $lbl.append(document.createTextNode(" "));
+            $("<span class='prm'></span>").text("(" + prms.join(",") + ")").appendTo($lbl);
         }
-        else $("<td></td>").text("-").appendTo($tr);
-        $("<td><button class='close'><span aria-hidden='true'>&times;</span><span class='sr-only'>Delete</span></button></td>")
-            .appendTo($tr);
-        $tr.appendTo($tb);
+        $lbl.append(document.createTextNode(" "));
+        $("<button class='btn btn-xs'><span aria-hidden='true'>&times;</span><span class='sr-only'>Delete</span></button>")
+            .appendTo($lbl);
+        $lbl.appendTo($lu);
+        $lu.append(document.createTextNode(" "));
     });
 }
 

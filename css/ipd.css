@@ -30,7 +30,15 @@ h2, h3 {
 .well > h3 {
     margin-top: 0;
 }
-
+span.label .prm {
+    font-weight:    300;
+}
+span.label .btn {
+    background: none;
+    padding:    0;
+    margin: 0 0 2px 2px;
+    line-height:    0.5;
+}
 
 /*
     red:    #fb4342
