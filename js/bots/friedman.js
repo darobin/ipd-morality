@@ -9,8 +9,7 @@ var isNode = typeof exports !== "undefined";
                 "interaction."
             ,   function (pastMoves) {
                     if (!pastMoves.length) return "C";
-                    var hasDefected = pastMoves.some(function (turn) { return turn[1] === "D"; });
-                    return hasDefected ? "D" : "C";
+                    return pastMoves.theirDefections ? "D" : "C";
                 }
             )
         ;

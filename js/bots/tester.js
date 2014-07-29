@@ -12,7 +12,7 @@ var isNode = typeof exports !== "undefined";
             ,   function (pastMoves) {
                     if (!pastMoves.length) return "D";
                     var partnerMoves = pastMoves.map(function (turn) { return turn[1]; });
-                    if (partnerMoves.indexOf("D") === -1) {
+                    if (pastMoves.theirDefections) {
                         if (pastMoves.length < 3) return "C";
                         return pastMoves[pastMoves.length - 1][0] === "C" ? "D" : "C";
                     }

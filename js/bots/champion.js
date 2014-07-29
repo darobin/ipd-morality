@@ -19,11 +19,8 @@ var isNode = typeof exports !== "undefined";
                     if (expectedLength/20 < numTurns && numTurns < ((5/40) * expectedLength))
                         return pastMoves[pastMoves.length - 1][1];
                     if (numTurns >= (5/40) * expectedLength) {
-                        var theirLastMove = pastMoves[pastMoves.length - 1][1]
-                        ,   theirDefection = 0
-                        ;
-                        pastMoves.forEach(function (turn) { if (turn[1] === "D") theirDefection++; });
-                        var theirDefectionRate = theirDefection / numTurns
+                        var theirLastMove = pastMoves[pastMoves.length - 1][1];
+                        var theirDefectionRate = pastMoves.theirDefections / numTurns
                         ,   r = Math.random()
                         ;
                         return (theirLastMove === "D" && theirDefectionRate > Math.max(0.4, r)) ? "D" : "C";

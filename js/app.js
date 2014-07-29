@@ -2,7 +2,6 @@
 
 /*
     XXX
-    - provide feedback on progress
     - add a UI to do evolutionary stuff
     - workerify
 */

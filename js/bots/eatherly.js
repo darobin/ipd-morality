@@ -11,9 +11,7 @@ var isNode = typeof exports !== "undefined";
             ,   function (pastMoves) {
                     if (!pastMoves.length) return "C";
                     if (pastMoves[pastMoves.length - 1][1] === "C") return "C";
-                    var theirDefections = 0;
-                    pastMoves.forEach(function (turn) { if (turn[1] === "D") theirDefections++; });
-                    var defectionRatio = theirDefections/pastMoves.length;
+                    var defectionRatio = pastMoves.theirDefections/pastMoves.length;
                     return (Math.random() < defectionRatio) ? "D" : "C";
                 }
             )

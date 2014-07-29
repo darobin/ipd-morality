@@ -56,10 +56,14 @@ var isNode = typeof exports !== "undefined";
             ,   pastMoves2 = []
             ,   i = 0
             ;
+            pastMoves1.theirDefections = 0;
+            pastMoves2.theirDefections = 0;
             while (i < interactionLength) {
                 var bot1Move = bot1.getNextMove(pastMoves1, payoffs, w)
                 ,   bot2Move = bot2.getNextMove(pastMoves2, payoffs, w)
                 ;
+                if (bot1Move === "D") pastMoves2.theirDefections++;
+                if (bot2Move === "D") pastMoves1.theirDefections++;
                 pastMoves1.push([bot1Move, bot2Move]);
                 pastMoves2.push([bot2Move, bot1Move]);
                 i++;
@@ -131,8 +135,8 @@ var isNode = typeof exports !== "undefined";
                     for (var m = 0, p = numMeetings; m < p; m++) {
                         meetingResultsList
                             .push(this.botInteraction(bot1, bot2, interactionLengths[m], payoffs, w));
-                        progress(bot1.name + " vs " + bot2.name + ": meeting " + (m+1) + "/" +
-                                 numMeetings + " with " + interactionLengths[m] + " interactions done.");
+                        // progress(bot1.name + " vs " + bot2.name + ": meeting " + (m+1) + "/" +
+                        //          numMeetings + " with " + interactionLengths[m] + " interactions done.");
                     }
                     interactions[bot1.tournamentID + "-" + bot2.tournamentID] = meetingResultsList;
                 }
