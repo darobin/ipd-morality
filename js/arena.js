@@ -102,16 +102,17 @@ var isNode = typeof exports !== "undefined";
 
             ARGS:
             - botList: list of bots to participate in the tournament
-            - w: probability of interaction continuing at each step
             - numMeetings: number of times each bot is paired with each
             other bot
+            - progress: a callback that takes a string to update the UI with progress
             - payoffs: defines the scores for each Prisoner's Dilemma situation
+            - w: probability of interaction continuing at each step
 
             RETURNS:
             - tourney_res: TournamentResults object with all the info
             
         */
-    ,   runTournament:  function (botList, numMeetings, payoffs, w) {
+    ,   runTournament:  function (botList, numMeetings, progress, payoffs, w) {
             if (!payoffs) payoffs = { T: 5, R: 3, P: 1, S: 0 };
             if (typeof w === "undefined") w = 0.995;
             var errors = this.validateTournamentInputs(botList, numMeetings, payoffs, w);
@@ -130,6 +131,8 @@ var isNode = typeof exports !== "undefined";
                     for (var m = 0, p = numMeetings; m < p; m++) {
                         meetingResultsList
                             .push(this.botInteraction(bot1, bot2, interactionLengths[m], payoffs, w));
+                        progress(bot1.name + " vs " + bot2.name + ": meeting " + (m+1) + "/" +
+                                 numMeetings + " with " + interactionLengths[m] + " interactions done.");
                     }
                     interactions[bot1.tournamentID + "-" + bot2.tournamentID] = meetingResultsList;
                 }

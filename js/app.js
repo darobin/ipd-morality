@@ -95,6 +95,9 @@ function showTournament () {
 // loading data
 var $botlist = $("#bot-type")
 ,   $botprms = $("#bot-prms")
+,   $progress = $("#progress")
+,   $progMsg = $progress.find("span")
+,   $run = $("#run")
 ;
 $botlist.empty();
 $botprms.empty();
@@ -154,8 +157,15 @@ $("#default-lineup").click(function () {
     showTournament();
 });
 
-$("#run").submit(function (ev) {
+function updateProgress (str) {
+    $progMsg.text(str);
+}
+
+$run.submit(function (ev) {
     ev.preventDefault();
+    $run.attr("disabled", "disabled");
+    updateProgress("Preparing...");
+    $progress.show();
     var lineup = [];
     $lu.find("span.label").each(function () {
         var bot = {};
@@ -188,7 +198,7 @@ $("#run").submit(function (ev) {
     });
     
     var arena = new Arena()
-    ,   results = arena.runTournament(bots, numMeetings)
+    ,   results = arena.runTournament(bots, numMeetings, updateProgress)
     ,   morality = new MoralityCalculator(results)
     ,   $restabs = $("#result-tables")
     ,   data = {
@@ -230,6 +240,11 @@ $("#run").submit(function (ev) {
         });
         $tab.appendTo($restabs);
     }
+    updateProgress("Done!");
+    setTimeout(function () {
+        $run.removeAttr("disabled");
+        $progress.hide();
+    }, 500);
 });
 
 showTournament();
