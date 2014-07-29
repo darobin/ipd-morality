@@ -48,13 +48,14 @@ var isNode = typeof exports !== "undefined";
             ,   bigManScores = {}
             ,   coopRates = {}
             ;
+            console.log("coopMatrix", coopMatrix);
             botIDList.forEach(function (bID) { bigManScores[bID] = 0; });
             botList.forEach(function (_, i) {
                 var bot1ID = botList[i].tournamentID;
                 botList.slice(i).forEach(function (_, j) {
                     var bot2ID = botList[j].tournamentID
                     ,   interactions = tr.interactions[bot1ID + "-" + bot2ID]
-                    ,   totalTurns = interactions.reduce(function (prev, cur) { return prev.length + cur.length; }, 0)
+                    ,   totalTurns = interactions.reduce(function (prev, cur) { return (prev ? prev.length : 0) + cur.length; }, [])
                     ,   bot1Coops = 0
                     ,   bot2Coops = 0
                     ;

@@ -42,15 +42,15 @@ span.label .btn {
 #add-bot {
     padding-top:    1em;
 }
-#add-bot input[type='number'] {
-    width:  60px;
-}
 #bot-prms:not(:empty) {
     padding:    0 5px;
 }
 #bot-prms label {
     font-weight:    normal;
     font-style: italic;
+}
+.input-thin {
+    width:  60px;
 }
 
 /*

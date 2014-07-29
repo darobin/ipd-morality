@@ -44,7 +44,7 @@ var isNode = typeof exports !== "undefined";
         var somePair = Object.keys(this.interactions)[0];
         this.interactions[somePair].forEach(function (interaction) {
             this.interactionLengths.push(interaction.length);
-        });
+        }.bind(this));
         this.totalInteractions = this.numBots *
                                  this.interactionLengths.reduce(function (prev, cur) {
                                     return prev + cur;

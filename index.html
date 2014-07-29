@@ -21,7 +21,7 @@
             <span class="icon-bar"></span>
           </button>
 -->
-          <h1 class="navbar-brand">Iterative Prisoners’ Dilemma — Morality</h1>
+          <h1 class="navbar-brand">Iterative Prisoners’ Dilemma &amp; Morality</h1>
         </div>
 <!--
         <div class="collapse navbar-collapse">
@@ -53,10 +53,21 @@
               <form class='form form-inline' id='add-bot'>
                 <label>Add bot: <select id='bot-type' class='form-control input-sm'></select></label>
                 <span id='bot-prms'></span>
-                <button type='submit' class='btn btn-xs btn-success'><i class='glyphicon glyphicon-plus'></i> Add</button>
+                <button type='submit' class='btn btn-sm btn-success'><i class='glyphicon glyphicon-plus'></i> Add</button>
               </form>
-              <label>Number of meetings: <input type="number" min="1" value="5" id="num-meetings"></label>
-              <button class="btn btn-success pull-right">Run tournament</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12">
+          <div class="panel panel-default">
+            <div class="panel-heading"><h3 class="panel-title">Run Tournament</h3></div>
+            <div class="panel-body">
+              <form class="form form-inline" id="run">
+                <label>Number of meetings: <input type="number" min="1" value="5" id="num-meetings" class="form-control input-thin input-sm"></label>
+                <button type="submit" class="btn btn-sm btn-success"><i class="glyphicon glyphicon-play"></i> Run!</button>
+              </form>
             </div>
           </div>
         </div>
@@ -67,7 +78,6 @@
       XXX
         - on run, save bot lineup
         - extract bot lineup from list
-        - add bot (add a row with drop down, on change offer config and Ok, on Ok just make a normal row)
         - on run, run the tournament, make the calculations (provide feedback, progress if possible)
         - then render the results tables
         

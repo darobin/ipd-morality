@@ -1,4 +1,4 @@
-/* global error */
+/* global error, Arena, MoralityCalculator */
 
 // error messages
 window.error = function (msg) {
@@ -21,7 +21,7 @@ window.error = function (msg) {
 // TOURNAMENTS
 var $lu = $("#lineup");
 
-function loadLastLineUp () {
+function loadLastLineup () {
     if (localStorage.lastLineup) return JSON.parse(localStorage.lastLineup);
     return [
         { type: "all_d" }
@@ -45,6 +45,10 @@ function loadLastLineUp () {
     ,   { type: "random",                   params: { cooperate: 0.8 } }
     ,   { type: "random",                   params: { cooperate: 0.2 } }
     ];
+}
+
+function saveLineup (lineup) {
+    localStorage.lastLineup = JSON.stringify(lineup);
 }
 
 function addToLineup (bot) {
@@ -71,7 +75,7 @@ function addToLineup (bot) {
 
 function showTournament () {
     var $tn = $("#tournament")
-    ,   lineup = loadLastLineUp()
+    ,   lineup = loadLastLineup()
     ;
     $tn.show();
     $lu.empty();
@@ -96,7 +100,7 @@ $botlist.change(function () {
                             .text(" " + k + ": ")
                             .appendTo($botprms)
             ;
-            $("<input type='number' min='0' max='0.999' step='0.05' class='form-control input-sm'>")
+            $("<input type='number' min='0' max='0.999' step='0.05' class='form-control input-sm input-thin'>")
                 .attr({ name: k, value: botDef[k].default || "", placeholder: k })
                 .appendTo($lbl)
                 ;
@@ -128,53 +132,53 @@ $("#add-bot").submit(function (ev) {
         ;
         if (!bot.params) bot.params = {};
         if ($inp.attr("type") === "radio" || $inp.attr("type") === "checkbox") val = $inp.is(":checked");
+        else if ($inp.attr("type") === "number") val = 1 * $inp.val();
         else val = $inp.val();
         bot.params[$inp.attr("name")] = val;
     });
     addToLineup(bot);
 });
 
-showTournament();
-
-/*
-    from Arena
-    if __name__ == "__main__":
-
-        import the_bots
-
-        a = Arena()
-
-        #----------#
-
-        num_meetings = 5
-
-        b1 = the_bots.ALL_D()
-        b2 = the_bots.ALL_C()
-        b3 = the_bots.RANDOM(p_cooperate=0.5)
-        b4 = the_bots.PAVLOV()
-        b5 = the_bots.TIT_FOR_TAT()
-        b6 = the_bots.TIT_FOR_TWO_TATS()
-        b7 = the_bots.TWO_TITS_FOR_TAT()
-        b8 = the_bots.SUSPICIOUS_TIT_FOR_TAT()
-        b9 = the_bots.GENEROUS_TIT_FOR_TAT(p_generous=0.1)
-        b10 = the_bots.GENEROUS_TIT_FOR_TAT(p_generous=0.3)
-        b11 = the_bots.JOSS(p_sneaky=0.1)
-        b12 = the_bots.JOSS(p_sneaky=0.3)
-        b13 = the_bots.MAJORITY(soft=True)
-        b14 = the_bots.MAJORITY(soft=False)
-        b15 = the_bots.TESTER()
-        b16 = the_bots.FRIEDMAN()
-        b17 = the_bots.EATHERLY()
-        b18 = the_bots.CHAMPION()
-        b19 = the_bots.RANDOM(p_cooperate=0.8)
-        b20 = the_bots.RANDOM(p_cooperate=0.2)
-        bot_list = [b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13,\
-         b14, b15, b16, b17, b18, b19, b20]
-
-        t = a.runTournament(bot_list, num_meetings)
-        print(t)
-
-        mc = mc.MoralityCalculator(t)
-        print(mc)
+$("#run").submit(function (ev) {
+    ev.preventDefault();
+    var lineup = [];
+    $lu.find("span.label").each(function () {
+        var bot = {};
+        for (var i = 0, n = this.attributes.length; i < n; i++) {
+            var attr = this.attributes[i];
+            if (!/^data-/.test(attr.name)) continue;
+            if (attr.name === "data-type") bot.type = attr.value;
+            else {
+                if (!bot.params) bot.params = {};
+                var val = attr.value;
+                if (/^\d+(\.\d+)?$/.test(val)) val = 1 * val;
+                bot.params[attr.name.replace("data-", "")] = val;
+            }
+        }
+        lineup.push(bot);
+    });
+    saveLineup(lineup);
+    var numMeetings = 1 * $("#num-meetings").val() || 5
+    ,   bots = []
+    ;
+    lineup.forEach(function (b) {
+        var botFunc = window.bots[b.type]
+        ,   botArgs = []
+        ;
+        if (!b.params) b.params = {};
+        for (var k in botFunc.configuration) {
+            botArgs.push(b.params[k] != null ? b.params[k] : botFunc.configuration[k].default);
+        }
+        bots.push(botFunc.apply(window.bots, botArgs));
+    });
     
-*/
+    var arena = new Arena()
+    ,   results = arena.runTournament(bots, numMeetings)
+    ,   morality = new MoralityCalculator(results)
+    ;
+    console.log(results);
+    console.log("##################");
+    console.log(morality);
+});
+
+showTournament();
