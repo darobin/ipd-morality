@@ -48,19 +48,21 @@ var isNode = typeof exports !== "undefined";
             ,   bigManScores = {}
             ,   coopRates = {}
             ;
-            console.log("coopMatrix", coopMatrix);
             botIDList.forEach(function (bID) { bigManScores[bID] = 0; });
             botList.forEach(function (_, i) {
                 var bot1ID = botList[i].tournamentID;
                 botList.slice(i).forEach(function (_, j) {
+                    j += i;
                     var bot2ID = botList[j].tournamentID
                     ,   interactions = tr.interactions[bot1ID + "-" + bot2ID]
-                    ,   totalTurns = interactions.reduce(function (prev, cur) { return (prev ? prev.length : 0) + cur.length; }, [])
+                    // ,   totalTurns = interactions.reduce(function (prev, cur) { return (prev ? prev.length : 0) + cur.length; }, [])
+                    ,   totalTurns = 0
                     ,   bot1Coops = 0
                     ,   bot2Coops = 0
                     ;
                     interactions.forEach(function (meetings) {
                         meetings.forEach(function (turn) {
+                            totalTurns++;
                             if (turn[0] === "C") bot1Coops++;
                             if (turn[1] === "C") bot2Coops++;
                         });
@@ -80,7 +82,7 @@ var isNode = typeof exports !== "undefined";
                 ,   botCoopRates = coopMatrix[botID]
                 ;
                 coopRates[botID] = botCoopRates.reduce(function (prev, cur) { return prev + cur; }, 0) / botCoopRates.length;
-                bigManScores[botID] = bigManScores[botID] / botList.length - 1;
+                bigManScores[botID] = bigManScores[botID] / (botList.length - 1);
             });
             this.cooperationMatrix = coopMatrix; // this is normally np.array
             this.biggerManScores = bigManScores;
@@ -103,6 +105,7 @@ var isNode = typeof exports !== "undefined";
             ,   currentVals = C[0].map(function () { return 1; })
             ,   pos = 0
             ;
+            // console.log("currentVals (before)", currentVals);
             while (pos < iters) {
                 // dot
                 var resVals = [];
@@ -118,9 +121,11 @@ var isNode = typeof exports !== "undefined";
                 currentVals = resVals;
                 pos++;
             }
+            // console.log("currentVals (after)", currentVals);
             var totalVal = currentVals.reduce(function (prev, cur) { return prev + cur; }, 0)
             ,   pev = clone(currentVals)
             ;
+            // console.log("totalVal", totalVal);
             for (var i = 0, n = currentVals.length; i < n; i++) {
                 pev[i] = (numVals/totalVal) * currentVals[i];
             }
@@ -148,6 +153,7 @@ var isNode = typeof exports !== "undefined";
                                                 return (cell - 0.5) * 2;
                                             });
                                         });
+            // console.log(this.cooperationMatrix, coopDefectMatrix);
             this.eigenMosesScores = this.principalEigenvector(coopDefectMatrix, 100);
         }
         // Various simple getters
