@@ -53,9 +53,8 @@ function showTournament () {
     ;
     $tn.show();
     $tb.empty();
-    lineup.forEach(function (bot, idx) {
+    lineup.forEach(function (bot) {
         var $tr = $("<tr></tr>");
-        $("<td></td>").text(idx).appendTo($tr);
         $("<td></td>").text(bot.type).appendTo($tr);
         if (bot.params) {
             var botDef = window.bots[bot.type].configuration
