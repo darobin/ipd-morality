@@ -66,7 +66,7 @@ function showTournament () {
             $("<span class='prm'></span>").text("(" + prms.join(",") + ")").appendTo($lbl);
         }
         $lbl.append(document.createTextNode(" "));
-        $("<button class='btn btn-xs'><span aria-hidden='true'>&times;</span><span class='sr-only'>Delete</span></button>")
+        $("<button class='btn btn-xs del'><span aria-hidden='true'>&times;</span><span class='sr-only'>Delete</span></button>")
             .appendTo($lbl);
         $lbl.appendTo($lu);
         $lu.append(document.createTextNode(" "));
@@ -111,6 +111,9 @@ $botlist.change(function () {
     }
 });
 
+$("body").on("click", "#lineup .del", function (ev) {
+    $(ev.target).parent().remove();
+});
 
 showTournament();
 
