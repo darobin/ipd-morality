@@ -42,8 +42,9 @@
       </div>
     </div>
 
-    <div class="container" id="tournament">
+    <div class="container">
       <h2>Tournament</h2>
+      <!-- tournament help -->
       <div class="row">
         <div class="col-lg-12">
           <div class="panel panel-default">
@@ -61,7 +62,7 @@
               <p>
                 Be aware that small sets of bots with highly caricatural behaviours (e.g. all_c +
                 all_d + random(0.5)) can exhibit degenerate results highly sensitive to small random
-                fluctuations, or even the occasional <code>NaN</code>.
+                fluctuations.
               </p>
               <p>
                 Once the bots are picked, you can run the tournament and read the results. You'll
@@ -72,6 +73,7 @@
           </div>
         </div>
       </div>
+      <!-- bot lineup and tournament run UI -->
       <div class="row">
         <div class="col-lg-12">
           <div class="panel panel-default">
@@ -97,30 +99,32 @@
           </div>
         </div>
       </div>
-<!--
+      <!-- tournament results -->
+      <div class="row" id="result-tables"></div>
+      
+      
+      <h2>Evolution</h2>
+      <!-- evolution help -->
       <div class="row">
         <div class="col-lg-12">
           <div class="panel panel-default">
-            <div class="panel-heading"><h3 class="panel-title">Run Tournament</h3></div>
             <div class="panel-body">
-              <form class="form form-inline" id="run">
-                <label>Number of meetings: <input type="number" min="1" value="5" id="num-meetings" class="form-control input-thin input-sm"></label>
-                <button type="submit" class="btn btn-sm btn-success"><i class="glyphicon glyphicon-play"></i> Run!</button>
-              </form>
-              <div id="progress" style="display: none">
-                <img src="img/running.gif" width="32" height="32" alt="Process running…">
-                <span></span>
-              </div>
+              <p>
+                This part of the project runs the tournament in a generational manner in order to
+                observe the effects that different morality metrics might have if they influenced
+                reproductive success. One notion of interest is notably how much utility,
+                cooperativeness, and morality a population would evolve towards under different
+                metrics.
+              </p>
             </div>
           </div>
         </div>
       </div>
--->
-      <div class="row" id="result-tables"></div>
     </div>
 
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="vendor/setImmediate.js"></script>
     <script src="js/botplayer.js"></script>
     <script src="js/bots/all_c.js"></script>
     <script src="js/bots/all_d.js"></script>

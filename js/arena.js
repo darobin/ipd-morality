@@ -116,7 +116,7 @@ var isNode = typeof exports !== "undefined";
             - tourney_res: TournamentResults object with all the info
             
         */
-    ,   runTournament:  function (botList, numMeetings, progress, payoffs, w) {
+    ,   runTournament:  function (botList, numMeetings, done, progress, payoffs, w) {
             if (!payoffs) payoffs = { T: 5, R: 3, P: 1, S: 0 };
             if (typeof w === "undefined") w = 0.995;
             var errors = this.validateTournamentInputs(botList, numMeetings, payoffs, w);
@@ -125,23 +125,29 @@ var isNode = typeof exports !== "undefined";
             ,   interactionLengths = this.generateInteractionLengths(w, numMeetings)
             ;
             for (var i = 0, n = botList.length; i < n; i++) botList[i].tournamentID = i;
-            var numBots = botList.length;
+            var numBots = botList.length
+            ,   expected = 0
+            ,   seen = 0
+            ;
             for (var i = 0, n = numBots; i < n; i++) {
                 for (var j = 0, o = numBots; j < o; j++) {
-                    var bot1 = botList[i]
-                    ,   bot2 = botList[j]
-                    ,   meetingResultsList = []
-                    ;
-                    for (var m = 0, p = numMeetings; m < p; m++) {
-                        meetingResultsList
-                            .push(this.botInteraction(bot1, bot2, interactionLengths[m], payoffs, w));
-                        // progress(bot1.name + " vs " + bot2.name + ": meeting " + (m+1) + "/" +
-                        //          numMeetings + " with " + interactionLengths[m] + " interactions done.");
-                    }
-                    interactions[bot1.tournamentID + "-" + bot2.tournamentID] = meetingResultsList;
+                    expected++;
+                    (function (bot1, bot2, meetingResultsList) {
+                        env.setImmediate(function () {
+                            for (var m = 0, p = numMeetings; m < p; m++) {
+                                meetingResultsList
+                                    .push(this.botInteraction(bot1, bot2, interactionLengths[m], payoffs, w));
+                            }
+                            // if (progress)
+                            //     progress(bot1.name + " vs " + bot2.name + ": had " + numMeetings + " meetings.");
+                            interactions[bot1.tournamentID + "-" + bot2.tournamentID] = meetingResultsList;
+                            seen++;
+                            if (seen === expected)
+                                done(new env.TournamentResults(botList, interactions, payoffs));
+                        }.bind(this));
+                    }.bind(this))(botList[i], botList[j], []);
                 }
             }
-            return new env.TournamentResults(botList, interactions, payoffs);
         }
     };
     

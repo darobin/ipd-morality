@@ -124,6 +124,8 @@ var isNode = typeof exports !== "undefined";
             ;
             for (var i = 0, n = currentVals.length; i < n; i++) {
                 pev[i] = (numVals/totalVal) * currentVals[i];
+                // rare degenerate case
+                if (isNaN(pev[i])) pev[i] = 1;
             }
             return pev;
         }
