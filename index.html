@@ -120,6 +120,62 @@
           </div>
         </div>
       </div>
+      <!-- evolution ui -->
+      <div class="row">
+        <div class="col-lg-5 col-sm-12">
+          <div class="panel panel-default">
+            <div class="panel-heading"><h3 class="panel-title">Bot Population</h3></div>
+            <table class="table table-condensed table-striped">
+              <thead>
+                <tr>
+                  <th>Bot Type</th>
+                  <th>Params</th>
+                  <th>Population</th>
+                  <th class="del-col">&times;</th>
+                </tr>
+              </thead>
+              <tbody id="population"></tbody>
+            </table>
+            <hr>
+            <div class='panel-body'>
+              <form class='form form-inline' id='add-pop'>
+                <label>Add bot: <select id='bot-pop-type' class='form-control input-sm'></select></label>
+                <span id='bot-pop-prms'></span>
+                <br>
+                <button type='submit' class='btn btn-sm btn-success'><i class='glyphicon glyphicon-plus'></i> Add</button>
+                <button type='button' class='btn btn-sm btn-warning' id='default-population'><i class="glyphicon glyphicon-trash"></i> Default</button>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-7 col-sm-12">
+          <div class="panel panel-default">
+            <div class="panel-heading"><h3 class="panel-title">Evolution Management</h3></div>
+            <div class="panel-body">
+              <p>
+                Pick some bots to establish the structure of the population at evolution start. You
+                can't have duplicates (but you can have the same basic bot type with different
+                parameters). Select some options from the form below, and run with it!
+              </p>
+              <form id="run-evolution" class="form form-inline">
+                <label>
+                  Morality:
+                  <select id="morality" class="form-control">
+                    <option value="cooperation">Cooperation</option>
+                    <option value="eigenjesus">EigenJesus</option>
+                    <option value="eigenmoses">EigenMoses</option>
+                  </select>
+                </label>
+                <label>Importance: <input type="number" min="0.05" max="0.95" value="0.5" id="importance" class="form-control input-sm input-thin"></label>
+                <label>Steps: <input type="number" min="1" value="1000" id="evolution-steps" class="form-control input-sm input-thin"></label>
+                <label>Meetings: <input type="number" min="1" value="5" id="evolution-meetings" class="form-control input-sm input-thin"></label>
+                <br>
+                <button type="submit" class="btn btn-success btn-sm pull-right">Run!</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
@@ -144,6 +200,7 @@
     <script src="js/tournament_results.js"></script>
     <script src="js/morality_calculator.js"></script>
     <script src="js/arena.js"></script>
+    <script src="js/evolution.js"></script>
     <script src="js/app.js"></script>
   </body>
 </html>

@@ -52,6 +52,13 @@ span.label .btn {
 input.form-control.input-thin {
     width:  60px;
 }
+td.botprms {
+    font-size:  0.8em;
+}
+table.table.table-condensed th.del-col {
+    padding:    5px 10px;
+}
+
 
 /*
     red:    #fb4342

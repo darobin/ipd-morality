@@ -4,6 +4,7 @@
     XXX
     - add a UI to do evolutionary stuff
     - workerify?
+    - a fair bit of rearchitecting and refactoring would really not hurt
 */
 
 
@@ -24,6 +25,50 @@ window.error = function (msg) {
         .show()
     ;
 };
+function makeBotOptionsShower ($list, $prms) {
+    return function () {
+        $prms.empty();
+        var botDef = window.bots[$list.val()].configuration;
+        for (var k in botDef) {
+            if (botDef[k].type === Number) {
+                var $lbl = $("<label></label>")
+                                .text(" " + k + ": ")
+                                .appendTo($prms)
+                ;
+                $("<input type='number' min='0' max='0.999' step='0.05' class='form-control input-sm input-thin'>")
+                    .attr({ name: k, value: botDef[k].default || "", placeholder: k })
+                    .appendTo($lbl)
+                    ;
+            }
+            else if (botDef[k].type === Boolean) {
+                var $inp = $("<input type='checkbox'>").attr({ name: k });
+                if (botDef[k].default === true) $inp.attr("checked", "checked");
+                $("<label></label>")
+                    .text(" " + k + ": ")
+                    .append($inp)
+                    .appendTo($prms)
+                ;
+            }
+            else {
+                error("Unknown field type: " + botDef[k].type);
+            }
+        }
+    };
+}
+function botFromAdd ($list, $prms) {
+    var bot = { type: $list.val() };
+    $prms.find("input").each(function () {
+        var $inp = $(this)
+        ,   val
+        ;
+        if (!bot.params) bot.params = {};
+        if ($inp.attr("type") === "radio" || $inp.attr("type") === "checkbox") val = $inp.is(":checked");
+        else if ($inp.attr("type") === "number") val = 1 * $inp.val();
+        else val = $inp.val();
+        bot.params[$inp.attr("name")] = val;
+    });
+    return bot;
+}
 
 // TOURNAMENTS
 var $lu = $("#lineup")
@@ -100,51 +145,14 @@ $botprms.empty();
 for (var type in window.bots) {
     $("<option></option>").text(type).attr("value", type).appendTo($botlist);
 }
-$botlist.change(function () {
-    $botprms.empty();
-    var botDef = window.bots[$botlist.val()].configuration;
-    for (var k in botDef) {
-        if (botDef[k].type === Number) {
-            var $lbl = $("<label></label>")
-                            .text(" " + k + ": ")
-                            .appendTo($botprms)
-            ;
-            $("<input type='number' min='0' max='0.999' step='0.05' class='form-control input-sm input-thin'>")
-                .attr({ name: k, value: botDef[k].default || "", placeholder: k })
-                .appendTo($lbl)
-                ;
-        }
-        else if (botDef[k].type === Boolean) {
-            var $inp = $("<input type='checkbox'>").attr({ name: k });
-            if (botDef[k].default === true) $inp.attr("checked", "checked");
-            $("<label></label>")
-                .text(" " + k + ": ")
-                .append($inp)
-                .appendTo($botprms)
-            ;
-        }
-        else {
-            error("Unknown field type: " + botDef[k].type);
-        }
-    }
-});
+$botlist.change(makeBotOptionsShower($botlist, $botprms));
 
 $("body").on("click", "#lineup .del", function (ev) {
     $(ev.target).parent().remove();
 });
 $("#add-bot").submit(function (ev) {
     ev.preventDefault();
-    var bot = { type: $botlist.val() };
-    $botprms.find("input").each(function () {
-        var $inp = $(this)
-        ,   val
-        ;
-        if (!bot.params) bot.params = {};
-        if ($inp.attr("type") === "radio" || $inp.attr("type") === "checkbox") val = $inp.is(":checked");
-        else if ($inp.attr("type") === "number") val = 1 * $inp.val();
-        else val = $inp.val();
-        bot.params[$inp.attr("name")] = val;
-    });
+    var bot = botFromAdd($botlist, $botprms);
     addToLineup(bot);
 });
 
@@ -249,3 +257,160 @@ $run.submit(function (ev) {
 });
 
 showTournament();
+
+// EVOLUTION
+var defaultPopulation = {
+    majority_soft:              {
+        type:   "majority"
+    ,   params: { soft: true }
+    ,   number: 10
+    }
+,   eatherly:                   {
+        type:   "eatherly"
+    ,   number: 10
+    }
+,   champion:                   {
+        type:   "champion"
+    ,   number: 10
+    }
+,   generous_tit_for_tat_03:    {
+        type:   "generous_tit_for_tat"
+    ,   params: { generous: 0.3 }
+    ,   number: 5
+    }
+,   generous_tit_for_tat_01:    {
+        type:   "generous_tit_for_tat"
+    ,   params: { generous: 0.1 }
+    ,   number: 5
+    }
+,   all_c:                      {
+        type:   "all_c"
+    ,   number: 2
+    }
+,   all_d:                      {
+        type:   "all_d"
+    ,   number: 2
+    }
+,   tit_for_two_tats:           {
+        type:   "tit_for_two_tats"
+    ,   number: 10
+    }
+,   friedman:                   {
+        type:   "friedman"
+    ,   number: 10
+    }
+,   joss_01:                    {
+        type:   "joss_01"
+    ,   number: 10
+    }
+};
+
+var $pop = $("#population")
+,   currentPopulation
+;
+
+function loadLastPopulation () {
+    if (localStorage.lastPopulation) return JSON.parse(localStorage.lastPopulation);
+    return JSON.parse(JSON.stringify(defaultPopulation));
+}
+
+function savePopulation (population) {
+    localStorage.lastPopulation = JSON.stringify(population);
+}
+
+function showPopulation () {
+    $pop.empty();
+    Object.keys(currentPopulation)
+            .sort()
+            .forEach(function (k) {
+                var $tr = $("<tr></tr>")
+                ,   def = currentPopulation[k]
+                ;
+                $("<th></th>").text(k).appendTo($tr);
+                var prms = def.params ?
+                                Object.keys(def.params)
+                                        .map(function (pk) { return pk + "=" + def.params[pk]; })
+                                        .join(",")
+                                : "-";
+                $("<td class='botprms'></td>").text(prms).appendTo($tr);
+                $("<td></td>")
+                    .append($("<input type='number' class='form-control input-sm input-thin' min='1'>").attr("value", def.number))
+                    .appendTo($tr);
+                $("<td><button class='btn btn-xs del btn-danger'><span aria-hidden='true'>&times;</span><span class='sr-only'>Delete</span></button></td>")
+                    .appendTo($tr);
+                $tr.attr("data-type", def.type);
+                $tr.attr("data-key", k);
+                if (def.params) {
+                    for (var pk in def.params) $tr.attr("data-" + pk, def.params[pk]);
+                }
+                $tr.appendTo($pop);
+            });
+}
+
+$("#default-population").click(function () {
+    savePopulation(defaultPopulation);
+    currentPopulation = loadLastPopulation();
+    showPopulation();
+});
+
+$("body").on("click", "#population .del", function (ev) {
+    var key = $(ev.target).parents("tr").first().attr("data-key");
+    delete currentPopulation[key];
+    showPopulation();
+});
+
+var $poplist = $("#bot-pop-type")
+,   $popprms = $("#bot-pop-prms")
+// ,   $progress = $("#progress")
+// ,   $progMsg = $progress.find("span")
+// ,   $evolve = $("#run-evolution")
+;
+$poplist.empty();
+$popprms.empty();
+for (var type in window.bots) {
+    $("<option></option>").text(type).attr("value", type).appendTo($poplist);
+}
+$poplist.change(makeBotOptionsShower($poplist, $popprms));
+
+$("#add-pop").submit(function (ev) {
+    ev.preventDefault();
+    var bot = botFromAdd($poplist, $popprms)
+    ,   name = bot.type
+    ;
+    if (bot.params) {
+        var n = [name];
+        for (var k in bot.params) {
+            if (typeof bot.params[k] === "boolean") {
+                if (bot.params[k]) n.push(k);
+            }
+            else n.push((bot.params[k] + "").replace(/\W/g, ""));
+        }
+        name = n.join("_");
+    }
+    if (currentPopulation[name]) return alert("Bot must be unique in the population, " + name + " is already there.");
+    currentPopulation[name] = {
+        type:   bot.type
+    ,   number: 10
+    };
+    if (bot.params) currentPopulation[name].params = bot.params;
+    showPopulation();
+});
+
+currentPopulation = loadLastPopulation();
+showPopulation();
+
+// XXX
+//  listen to run-evolution submits
+//  instantiate and run evolution
+//  show progress
+//  show results
+//  show population evolution
+
+// XXX
+//  pick a morality metric and the proportion to which it applies with respect to base utility
+//  pick how many meetings and how many generations
+//  run!
+//  what we want to show:
+//      - growth of populations over generations (graph it?)
+//      - overall morality
+//      - overall utility
