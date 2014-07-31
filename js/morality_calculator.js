@@ -20,10 +20,10 @@ var isNode = typeof exports !== "undefined";
         this.cooperationMatrix = null;
         this.biggerManScores = null;
         this.cooperationRates = null;
-        this.calculateCooperationStuff();
+        if (tournamRes) this.calculateCooperationStuff();
         this.eigenJesusScores = null;
         this.eigenMosesScores = null;
-        this.calculateNetworkMorality();
+        if (tournamRes) this.calculateNetworkMorality();
     }
     MoralityCalculator.prototype = {
         /*  Calculate the cooperation rate for each bot in each bot pair and store
@@ -38,7 +38,8 @@ var isNode = typeof exports !== "undefined";
             - cooperation_rates: the fraction of each bot's total moves that are
             cooperations
         */
-        calculateCooperationStuff:  function () {
+        calculateCooperationStuff:  function (tournRes) {
+            if (tournRes) this.tournamentResults = tournRes;
             var tr = this.tournamentResults
             ,   botList = tr.botList
             ,   botIDList = botList.map(function (bot) { return bot.tournamentID; })
@@ -144,7 +145,15 @@ var isNode = typeof exports !== "undefined";
             defector actually counts against you
         */
     ,   calculateNetworkMorality:   function () {
+            this.calculateEigenJesus();
+            this.calculateEigenMoses();
+        }
+    ,   calculateEigenJesus:    function (tournRes) {
+            if (tournRes) this.calculateCooperationStuff(tournRes);
             this.eigenJesusScores = this.principalEigenvector(this.cooperationMatrix, 100);
+        }
+    ,   calculateEigenMoses:    function (tournRes) {
+            if (tournRes) this.calculateCooperationStuff(tournRes);
             var coopDefectMatrix = clone(this.cooperationMatrix)
                                         .map(function (line) {
                                             return line.map(function (cell) {

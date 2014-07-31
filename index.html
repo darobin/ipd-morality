@@ -157,6 +157,21 @@
                 can't have duplicates (but you can have the same basic bot type with different
                 parameters). Select some options from the form below, and run with it!
               </p>
+              <p>
+                To put things briefly, <strong>Morality</strong> is a specific morality metric. The
+                eigen- ones are more interesting, but simple cooperation is included for comparison.
+                <strong>Importance</strong> is how important morality is to your reproductive
+                success. The idea here is that raking in the monies (the basic utility score) is
+                useful in order to breed, but being someone nice matters as well. Fitness is
+                defined as <code>utility * (1 - importance) + morality * importance</code> (all of
+                those having been normalised somehow). <strong>Steps</strong> is how many generations
+                to go on for, and <strong>meetings</strong> is how many times individuals are likely
+                to meet for.
+              </p>
+              <p>
+                <strong>Be careful</strong>: it is very, very easy to make this very, very slow as
+                the number of bots increases in the population.
+              </p>
               <form id="run-evolution" class="form form-inline">
                 <label>
                   Morality:
@@ -166,12 +181,16 @@
                     <option value="eigenmoses">EigenMoses</option>
                   </select>
                 </label>
-                <label>Importance: <input type="number" min="0.05" max="0.95" value="0.5" id="importance" class="form-control input-sm input-thin"></label>
-                <label>Steps: <input type="number" min="1" value="1000" id="evolution-steps" class="form-control input-sm input-thin"></label>
+                <label>Importance: <input type="number" min="0.05" max="0.95" step="0.05" value="0.5" id="importance" class="form-control input-sm input-thin"></label>
+                <label>Steps: <input type="number" min="1" value="50" id="evolution-steps" class="form-control input-sm input-thin"></label>
                 <label>Meetings: <input type="number" min="1" value="5" id="evolution-meetings" class="form-control input-sm input-thin"></label>
                 <br>
                 <button type="submit" class="btn btn-success btn-sm pull-right">Run!</button>
               </form>
+              <div id="evolution-progress" style="display: none">
+                <img src="img/running.gif" width="32" height="32" alt="Process running…">
+                <span></span>
+              </div>
             </div>
           </div>
         </div>

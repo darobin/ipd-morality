@@ -1,4 +1,4 @@
-/* global error, Arena, MoralityCalculator */
+/* global error, Arena, MoralityCalculator, Evolution */
 
 /*
     XXX
@@ -263,45 +263,33 @@ var defaultPopulation = {
     majority_soft:              {
         type:   "majority"
     ,   params: { soft: true }
-    ,   number: 10
-    }
-,   eatherly:                   {
-        type:   "eatherly"
-    ,   number: 10
+    ,   number: 5
     }
 ,   champion:                   {
         type:   "champion"
-    ,   number: 10
+    ,   number: 5
     }
 ,   generous_tit_for_tat_03:    {
         type:   "generous_tit_for_tat"
     ,   params: { generous: 0.3 }
     ,   number: 5
     }
-,   generous_tit_for_tat_01:    {
-        type:   "generous_tit_for_tat"
-    ,   params: { generous: 0.1 }
-    ,   number: 5
-    }
 ,   all_c:                      {
         type:   "all_c"
-    ,   number: 2
+    ,   number: 1
     }
 ,   all_d:                      {
         type:   "all_d"
-    ,   number: 2
-    }
-,   tit_for_two_tats:           {
-        type:   "tit_for_two_tats"
-    ,   number: 10
+    ,   number: 1
     }
 ,   friedman:                   {
         type:   "friedman"
-    ,   number: 10
+    ,   number: 5
     }
 ,   joss_01:                    {
-        type:   "joss_01"
-    ,   number: 10
+        type:   "joss"
+    ,   params: { sneaky: 0.1 }
+    ,   number: 3
     }
 };
 
@@ -334,7 +322,7 @@ function showPopulation () {
                                 : "-";
                 $("<td class='botprms'></td>").text(prms).appendTo($tr);
                 $("<td></td>")
-                    .append($("<input type='number' class='form-control input-sm input-thin' min='1'>").attr("value", def.number))
+                    .append($("<input type='number' class='form-control input-sm input-thin number' min='1'>").attr("value", def.number))
                     .appendTo($tr);
                 $("<td><button class='btn btn-xs del btn-danger'><span aria-hidden='true'>&times;</span><span class='sr-only'>Delete</span></button></td>")
                     .appendTo($tr);
@@ -359,11 +347,16 @@ $("body").on("click", "#population .del", function (ev) {
     showPopulation();
 });
 
+$("body").on("change", "#population .number", function (ev) {
+    var key = $(ev.target).parents("tr").first().attr("data-key");
+    currentPopulation[key].number = $(ev.target).val();
+});
+
 var $poplist = $("#bot-pop-type")
 ,   $popprms = $("#bot-pop-prms")
-// ,   $progress = $("#progress")
-// ,   $progMsg = $progress.find("span")
-// ,   $evolve = $("#run-evolution")
+,   $evoprog = $("#evolution-progress")
+,   $evoProgMsg = $evoprog.find("span")
+,   $evolve = $("#run-evolution")
 ;
 $poplist.empty();
 $popprms.empty();
@@ -399,10 +392,38 @@ $("#add-pop").submit(function (ev) {
 currentPopulation = loadLastPopulation();
 showPopulation();
 
+function updateEvoProgress (str) {
+    $evoProgMsg.text(str);
+}
+
+$evolve.submit(function (ev) {
+    ev.preventDefault();
+    $evolve.attr("disabled", "disabled");
+    updateEvoProgress("Evolving");
+    $evoprog.show();
+    savePopulation(currentPopulation);
+    var numMeetings = 1 * $("#evolution-meetings").val() || 5
+    ,   importance = 1 * $("#importance").val() || 0.5
+    ,   steps = 1 * $("#evolution-steps").val() || 1000
+    ,   morality = $("#morality").val()
+    ,   evolution = new Evolution(currentPopulation, morality, importance, steps, numMeetings)
+    ;
+    evolution.run(
+        function (type, obj) {
+            console.log(type, obj);
+            if (type === "msg") return updateEvoProgress(obj);
+        }
+    ,   function () {
+            updateEvoProgress("Done!");
+            setTimeout(function () {
+                $evolve.removeAttr("disabled");
+                $evoprog.hide();
+            }, 500);
+        }
+    );
+});
+
 // XXX
-//  listen to run-evolution submits
-//  instantiate and run evolution
-//  show progress
 //  show results
 //  show population evolution
 
@@ -412,5 +433,6 @@ showPopulation();
 //  run!
 //  what we want to show:
 //      - growth of populations over generations (graph it?)
-//      - overall morality
-//      - overall utility
+//      - total utility, morality
+//      - average utility, morality
+//      - differences in utility, morality
