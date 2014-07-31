@@ -53,19 +53,21 @@ var isNode = typeof exports !== "undefined";
                                 ,   maxMorality = moralityList[0][1] * 1.053 // idem
                                 ,   minMorality = moralityList[moralityList.length - 1][1]
                                 ,   breedingAdults = []
+                                ,   totalUtility = 0
+                                ,   totalMorality = 0
                                 ;
-                                console.log("minUtility", minUtility, "maxUtility", maxUtility, "minMorality", minMorality, "maxMorality", maxMorality);
                                 minUtility -= (maxUtility - minUtility) / 9; // the lowest is fitness 0.10
                                 minMorality -= (maxMorality - minMorality) / 9; // the lowest is fitness 0.10
                                 utilityList.forEach(function (botInfo) {
                                     breedingAdults[botInfo[0].tournamentID] = { bot: botInfo[0], utility: botInfo[1] };
+                                    totalUtility += 1 * botInfo[1];
                                 });
                                 moralityList.forEach(function (botInfo) {
                                     breedingAdults[botInfo[0].tournamentID].morality = botInfo[1];
+                                    totalMorality += 1 * botInfo[1];
                                 });
                                 normalise(breedingAdults, "utility", minUtility, maxUtility);
                                 normalise(breedingAdults, "morality", minMorality, maxMorality);
-                                console.log("breedingAdults{utility, morality}", breedingAdults[0].utility, breedingAdults[0].morality);
 
                                 // time to sex things up!
                                 for (var i = 0, n = breedingAdults.length; i < n; i++) {
@@ -77,7 +79,6 @@ var isNode = typeof exports !== "undefined";
                                                       0.5
                                                       ; // ooooh la la!
                                 }
-                                console.log("breedingAdults.fitness", breedingAdults[0].fitness);
                                 
                                 // it's a great band, really
                                 var newPopStructure = {};
@@ -88,7 +89,6 @@ var isNode = typeof exports !== "undefined";
                                     if (!newPopStructure[popType]) newPopStructure[popType] = 0;
                                     newPopStructure[popType] += grownUp.fitness;
                                 }
-                                console.log("newPopStructure", newPopStructure);
                                 
                                 // let's bring in Malthus
                                 var oldPopNumber = 0
@@ -99,16 +99,23 @@ var isNode = typeof exports !== "undefined";
                                 // this allows for some population size drift, but I'm guessing not much
                                 var normFactor = oldPopNumber / newPopNumber;
                                 for (var k in newPopStructure) newPopStructure[k] = Math.round(newPopStructure[k] * normFactor);
-                                console.log("normFactor", normFactor, oldPopNumber, newPopNumber, newPopStructure);
                                 
                                 // and watch those kids popping out
+                                var totalPop = 0;
                                 for (var k in newPopStructure) {
                                     // SURPRISE! YOU'RE DEAD!
                                     if (newPopStructure[k] === 0) delete this.population[k];
                                     else this.population[k].number = newPopStructure[k];
+                                    totalPop += 1 * newPopStructure[k];
                                 }
-                                progress("pop", newPopStructure);
                                 generations++;
+                                progress("report", {
+                                    generation:             generations
+                                ,   populationStructure:    newPopStructure
+                                ,   totalUtility:           totalUtility
+                                ,   totalMorality:          totalMorality
+                                ,   totalPopulation:        totalPop
+                                });
                                 if (generations >= this.steps) return done();
                                 progress("msg", "Generation: " + generations);
                                 evolve();

@@ -1,8 +1,7 @@
-/* global error, Arena, MoralityCalculator, Evolution */
+/* global error, Arena, MoralityCalculator, Evolution, randomColor */
 
 /*
     XXX
-    - add a UI to do evolutionary stuff
     - workerify?
     - a fair bit of rearchitecting and refactoring would really not hurt
 */
@@ -357,6 +356,11 @@ var $poplist = $("#bot-pop-type")
 ,   $evoprog = $("#evolution-progress")
 ,   $evoProgMsg = $evoprog.find("span")
 ,   $evolve = $("#run-evolution")
+,   $popStart = $("#pop-start")
+,   $popNow = $("#pop-now")
+,   $avgUtility = $("#avg-utility")
+,   $avgMorality = $("#avg-morality")
+,   $graph = $("#graph")
 ;
 $poplist.empty();
 $popprms.empty();
@@ -383,7 +387,7 @@ $("#add-pop").submit(function (ev) {
     if (currentPopulation[name]) return alert("Bot must be unique in the population, " + name + " is already there.");
     currentPopulation[name] = {
         type:   bot.type
-    ,   number: 10
+    ,   number: 2
     };
     if (bot.params) currentPopulation[name].params = bot.params;
     showPopulation();
@@ -395,23 +399,69 @@ showPopulation();
 function updateEvoProgress (str) {
     $evoProgMsg.text(str);
 }
+var SVG_NS = "http://www.w3.org/2000/svg";
+function graph ($el, generation, totalPop, pop, colours, steps) {
+    var width = $el.width() / steps + 2
+    ,   height = $el.height()
+    ,   g = document.createElementNS(SVG_NS, "g")
+    ,   offset = 0
+    ;
+    g.setAttribute("transform", "translate(" + (width * generation) + ", 0)");
+    for (var k in pop) {
+        var rect = document.createElementNS(SVG_NS, "rect");
+        rect.setAttribute("fill", colours[k]);
+        rect.setAttribute("x", 0);
+        rect.setAttribute("y", offset);
+        rect.setAttribute("width", width);
+        var h = (pop[k] / totalPop) * height;
+        rect.setAttribute("height", h);
+        offset += h;
+        rect.setAttribute("data-label", k + " (pop: " + pop[k] + ")");
+        g.appendChild(rect);
+    }
+    $el.append(g);
+}
+
+$("body").on("mouseover", "rect[data-label]", function (ev) {
+    $("#caption").text($(ev.target).attr("data-label"));
+});
 
 $evolve.submit(function (ev) {
     ev.preventDefault();
     $evolve.attr("disabled", "disabled");
     updateEvoProgress("Evolving");
     $evoprog.show();
+    $graph.empty();
     savePopulation(currentPopulation);
     var numMeetings = 1 * $("#evolution-meetings").val() || 5
     ,   importance = 1 * $("#importance").val() || 0.5
-    ,   steps = 1 * $("#evolution-steps").val() || 1000
+    ,   steps = 1 * $("#evolution-steps").val() || 50
     ,   morality = $("#morality").val()
     ,   evolution = new Evolution(currentPopulation, morality, importance, steps, numMeetings)
+    ,   startPopulation = 0
+    ,   colours = randomColor({ count: Object.keys(currentPopulation).length })
+    ,   colourMap = {}
+    ,   startPopStruct = {}
     ;
+    for (var k in currentPopulation) {
+        startPopulation += 1 * currentPopulation[k].number;
+        colourMap[k] = colours.shift();
+        startPopStruct[k] = 1 * currentPopulation[k].number;
+    }
+    $popStart.text(startPopulation);
+    graph($graph, 0, startPopulation, startPopStruct, colourMap, steps);
     evolution.run(
         function (type, obj) {
-            console.log(type, obj);
+            console.log(obj);
             if (type === "msg") return updateEvoProgress(obj);
+            else {
+                // reporting with each generation
+                $popNow.text(obj.totalPopulation);
+                $avgUtility.text((obj.totalUtility / obj.totalPopulation).toFixed(2));
+                // XXX this is not a useful metric, it will always be very close to 1. Need the eigenvalue.
+                $avgMorality.text((obj.totalMorality / obj.totalPopulation).toFixed(2));
+                graph($graph, obj.generation, obj.totalPopulation, obj.populationStructure, colourMap, steps);
+            }
         }
     ,   function () {
             updateEvoProgress("Done!");
@@ -422,17 +472,3 @@ $evolve.submit(function (ev) {
         }
     );
 });
-
-// XXX
-//  show results
-//  show population evolution
-
-// XXX
-//  pick a morality metric and the proportion to which it applies with respect to base utility
-//  pick how many meetings and how many generations
-//  run!
-//  what we want to show:
-//      - growth of populations over generations (graph it?)
-//      - total utility, morality
-//      - average utility, morality
-//      - differences in utility, morality

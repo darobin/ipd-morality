@@ -58,7 +58,10 @@ td.botprms {
 table.table.table-condensed th.del-col {
     padding:    5px 10px;
 }
-
+#caption {
+    text-align: center;
+    font-family:    Cinzel;
+}
 
 /*
     red:    #fb4342
